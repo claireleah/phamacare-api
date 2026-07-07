@@ -18,6 +18,8 @@ class Pharmacy extends Authenticatable
         'owner_name',
         'password',
         'status',
+        'plan_id',
+        'billing_cycle',
     ];
 
     protected $hidden = [
@@ -27,5 +29,10 @@ class Pharmacy extends Authenticatable
     public function subscription()
     {
         return $this->hasOne(Subscription::class);
+    }
+
+    public function plan()
+    {
+       return $this->belongsTo(\App\Models\Plan::class);
     }
 }

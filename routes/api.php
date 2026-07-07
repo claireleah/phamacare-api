@@ -29,4 +29,48 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/subscriptions',             [SubscriptionController::class, 'index']);
     Route::patch('/subscriptions/{id}/status',[SubscriptionController::class, 'updateStatus']);
     Route::get('/subscriptions/stats',       [SubscriptionController::class, 'stats']);
+
+
+    
+    Route::get('/dashboard/stats', function () {
+    $pharmacies = \App\Models\Pharmacy::all();
+    $subscriptions = \App\Models\Subscription::where('status','Paid')->get();
+    return response()->json([
+        'total_pharmacies'   => $pharmacies->count(),
+        'active_pharmacies'  => $pharmacies->where('status', 'Active')->count(),
+        'pending_pharmacies' => $pharmacies->where('status', 'Pending')->count(),
+        'monthly_revenue'    => $subscriptions->sum('amount'),
+    ]);
+
+
+    Route::put('/admin/profile', function (\Illuminate\Http\Request $request) {
+    $admin = $request->user();
+
+    $request->validate([
+        'name'  => 'required|string|max:255',
+        'email' => 'required|email|unique:admins,email,' . $admin->id,
+    ]);
+
+    $admin->update([
+        'name'  => $request->name,
+        'email' => $request->email,
+    ]);
+
+    if ($request->filled('password')) {
+        $request->validate([
+            'password' => 'min:8|confirmed',
+        ]);
+        $admin->update(['password' => bcrypt($request->password)]);
+    }
+
+    return response()->json([
+        'message' => 'Profile updated successfully',
+        'admin'   => $admin,
+    ]);
+});
+});
+});
+
+Route::get('/plans', function () {
+    return response()->json(\App\Models\Plan::all());
 });

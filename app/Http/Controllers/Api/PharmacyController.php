@@ -9,16 +9,17 @@ use Illuminate\Support\Facades\Hash;
 
 class PharmacyController extends Controller
 {
-    // Public — pharmacy registers itself
     public function register(Request $request)
     {
         $request->validate([
             'name'       => 'required|string|max:255',
             'owner_name' => 'required|string|max:255',
             'email'      => 'required|email|unique:pharmacies,email',
-            'phone'      => 'required|string|max:20',
+            'phone'      => 'required|regex:/^[0-9+\s]+$/|max:20',
             'location'   => 'required|string|max:255',
             'password'   => 'required|string|min:8',
+            'plan_id'       => 'required|exists:plans,id',
+            'billing_cycle' => 'required|in:monthly,yearly',
         ]);
 
         $pharmacy = Pharmacy::create([
@@ -29,6 +30,8 @@ class PharmacyController extends Controller
             'location'   => $request->location,
             'password'   => Hash::make($request->password),
             'status'     => 'Pending',
+            'plan_id'       => $request->plan_id,
+            'billing_cycle' => $request->billing_cycle,
         ]);
 
         return response()->json([
@@ -37,7 +40,6 @@ class PharmacyController extends Controller
         ], 201);
     }
 
-    // Public — pharmacy logs in
     public function login(Request $request)
     {
         $request->validate([
@@ -68,14 +70,12 @@ class PharmacyController extends Controller
         ]);
     }
 
-    // Protected — get all pharmacies (admin only)
     public function index()
     {
-        $pharmacies = Pharmacy::with('subscription')->get();
+        $pharmacies = Pharmacy::with(['subscription', 'plan'])->get();
         return response()->json($pharmacies);
     }
 
-    // Protected — update pharmacy status (admin only)
     public function updateStatus(Request $request, $id)
     {
         $request->validate([
@@ -91,7 +91,6 @@ class PharmacyController extends Controller
         ]);
     }
 
-    // Protected — delete pharmacy (admin only)
     public function destroy($id)
     {
         $pharmacy = Pharmacy::findOrFail($id);
