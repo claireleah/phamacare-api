@@ -24,6 +24,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/pharmacies',               [PharmacyController::class, 'index']);
     Route::post('/pharmacies/{id}/status',  [PharmacyController::class, 'updateStatus']);
     Route::delete('/pharmacies/{id}',       [PharmacyController::class, 'destroy']);
+    Route::get('/pharmacy-users',               [PharmacyController::class, 'staffIndex']);
+    Route::post('/pharmacy-users',              [PharmacyController::class, 'staffStore']);
+    Route::put('/pharmacy-users/{id}', [PharmacyController::class, 'staffUpdate']);
+    Route::patch('/pharmacy-users/{id}/status', [PharmacyController::class, 'staffToggleStatus']);
+    Route::delete('/pharmacy-users/{id}', [PharmacyController::class, 'staffDestroy']);
 
     // Subscriptions (admin only)
     Route::get('/subscriptions',             [SubscriptionController::class, 'index']);
@@ -41,6 +46,9 @@ Route::middleware('auth:sanctum')->group(function () {
         'pending_pharmacies' => $pharmacies->where('status', 'Pending')->count(),
         'monthly_revenue'    => $subscriptions->sum('amount'),
     ]);
+    
+    });
+    
 
 
     Route::put('/admin/profile', function (\Illuminate\Http\Request $request) {
@@ -69,7 +77,7 @@ Route::middleware('auth:sanctum')->group(function () {
     ]);
 });
 });
-});
+
 
 Route::get('/plans', function () {
     return response()->json(\App\Models\Plan::all());
