@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\PharmacyController;
 use App\Http\Controllers\Api\SubscriptionController;
+use App\Http\Controllers\Api\CustomerController;
 
 // ── Public routes (no token needed) ──────────────────────────
 
@@ -14,11 +15,20 @@ Route::post('/admin/login', [AuthController::class, 'login']);
 Route::post('/pharmacies/register', [PharmacyController::class, 'register']);
 Route::post('/pharmacies/login',    [PharmacyController::class, 'login']);
 
+
+Route::post('/customers/register', [CustomerController::class, 'register']);
+Route::post('/customers/login',    [CustomerController::class, 'login']);
+Route::get('/pharmacies-list',     [CustomerController::class, 'browsePharmacies']);
+Route::get('/pharmacies/{id}/products', [CustomerController::class, 'pharmacyProducts']);
+
 // ── Protected routes (token required) ────────────────────────
 Route::middleware('auth:sanctum')->group(function () {
 
     // Admin logout
     Route::post('/admin/logout', [AuthController::class, 'logout']);
+
+
+    
 
     // Pharmacies (admin only)
     Route::get('/pharmacies',               [PharmacyController::class, 'index']);
@@ -29,6 +39,23 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/pharmacy-users/{id}', [PharmacyController::class, 'staffUpdate']);
     Route::patch('/pharmacy-users/{id}/status', [PharmacyController::class, 'staffToggleStatus']);
     Route::delete('/pharmacy-users/{id}', [PharmacyController::class, 'staffDestroy']);
+
+    Route::get('/pharmacy-dashboard-stats', [PharmacyController::class, 'pharmacyDashboardStats']);
+    Route::put('/pharmacy-settings', [PharmacyController::class, 'pharmacyUpdate']);
+
+
+    Route::get('/products',        [PharmacyController::class, 'productIndex']);
+    Route::post('/products',       [PharmacyController::class, 'productStore']);
+    Route::put('/products/{id}',   [PharmacyController::class, 'productUpdate']);
+    Route::delete('/products/{id}',[PharmacyController::class, 'productDestroy']);
+
+
+    Route::get('/orders',              [PharmacyController::class, 'orderIndex']);
+    Route::post('/orders',             [PharmacyController::class, 'orderStore']);
+    Route::patch('/orders/{id}/status',[PharmacyController::class, 'orderUpdateStatus']);
+
+    Route::get('/sales-summary', [PharmacyController::class, 'salesSummary']);
+    Route::get('billing-info', [PharmacyController::class, 'billingInfo']);
 
     // Subscriptions (admin only)
     Route::get('/subscriptions',             [SubscriptionController::class, 'index']);
@@ -82,3 +109,8 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::get('/plans', function () {
     return response()->json(\App\Models\Plan::all());
 });
+
+
+Route::post('/customer-orders', [CustomerController::class, 'placeOrder']);
+Route::get('/customer-orders',     [CustomerController::class, 'myOrders']);
+Route::get('/customer-orders/{id}', [CustomerController::class, 'orderDetail']);
