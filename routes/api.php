@@ -76,7 +76,9 @@ Route::middleware('auth:sanctum')->group(function () {
     
     });
     
-
+    Route::post('/customer-orders', [CustomerController::class, 'placeOrder']);
+    Route::get('/customer-orders',     [CustomerController::class, 'myOrders']);
+    Route::get('/customer-orders/{id}', [CustomerController::class, 'orderDetail']);
 
     Route::put('/admin/profile', function (\Illuminate\Http\Request $request) {
     $admin = $request->user();
@@ -111,6 +113,4 @@ Route::get('/plans', function () {
 });
 
 
-Route::post('/customer-orders', [CustomerController::class, 'placeOrder']);
-Route::get('/customer-orders',     [CustomerController::class, 'myOrders']);
-Route::get('/customer-orders/{id}', [CustomerController::class, 'orderDetail']);
+
