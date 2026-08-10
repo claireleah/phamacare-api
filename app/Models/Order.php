@@ -11,8 +11,10 @@ class Order extends Model
         'customer_id',
         'customer_name', 
         'customer_phone', 
+        'delivery_address',
         'total_amount',
-         'status'
+         'status',
+         'payment_method',
          ];
 
     public function items()

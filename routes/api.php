@@ -27,6 +27,10 @@ Route::middleware('auth:sanctum')->group(function () {
     // Admin logout
     Route::post('/admin/logout', [AuthController::class, 'logout']);
 
+    
+    Route::put('/customer/profile', [CustomerController::class, 'updateProfile']);
+    Route::post('/customers/logout', [CustomerController::class, 'logout']);
+
 
     
 

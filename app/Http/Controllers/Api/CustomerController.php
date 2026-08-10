@@ -83,11 +83,19 @@ class CustomerController extends Controller
     {
         $customer = $request->user();
 
+        if (empty($customer->address)) {
+            return response()->json([
+                'message' => 'Please update your profile with a valid address before placing an order.'
+                ], 422);
+        }
+
         $request->validate([
             'pharmacy_id' => 'required|exists:pharmacies,id',
             'items'          => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.quantity'   => 'required|integer|min:1',
+            'payment_method'     => 'required|string|in:Cash on Delivery,Mobile Money',
+            
         ]);
 
         $total = 0;
@@ -108,8 +116,10 @@ class CustomerController extends Controller
             'customer_id'    => $customer->id,
             'customer_name'  => $customer->name,
             'customer_phone' => $customer->phone,
+            'delivery_address' => $customer->address,
             'total_amount'   => $total,
             'status'         => 'Pending',
+            'payment_method' => $request->payment_method,
         ]);
 
         foreach ($itemsData as $item) {
@@ -140,5 +150,27 @@ class CustomerController extends Controller
             ->findOrFail($id);
 
         return response()->json($order);
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $customer = $request->user();
+
+        $request->validate([
+            'name'     => 'required|string|max:255',
+            'phone'    => 'required|string',
+            'address' => 'nullable|string',
+        ]);
+
+        $customer->update([
+            'name'     => $request->name,
+            'phone'    => $request->phone,
+            'address' => $request->address,
+        ]);
+
+        return response()->json([
+            'message'  => 'Profile updated successfully',
+            'customer' => $customer,
+        ]);
     }
 }
