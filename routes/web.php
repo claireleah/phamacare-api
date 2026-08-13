@@ -20,6 +20,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::delete('/pharmacies/{id}',  [PharmacyController::class,  'destroy'])->name('pharmacies.destroy');
     Route::get('/pharmacies/create', [PharmacyController::class, 'create'])->name('pharmacies.create');
     Route::get('/riders',     [RiderController::class, 'index'])->name('riders');
+    Route::post('/riders/{id}/status', [RiderController::class, 'updateStatus'])->name('riders.status');
     Route::get('/subscriptions', [SubscriptionController::class, 'index'])->name('subscriptions');
     Route::get('/reports',    [ReportController::class, 'index'])->name('reports');
     Route::post('/settings/profile', [SettingsController::class, 'updateProfile'])->name('settings.profile');

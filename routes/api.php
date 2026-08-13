@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\PharmacyController;
 use App\Http\Controllers\Api\SubscriptionController;
 use App\Http\Controllers\Api\CustomerController;
+use App\Http\Controllers\Api\RiderController;
 
 // ── Public routes (no token needed) ──────────────────────────
 
@@ -15,11 +16,19 @@ Route::post('/admin/login', [AuthController::class, 'login']);
 Route::post('/pharmacies/register', [PharmacyController::class, 'register']);
 Route::post('/pharmacies/login',    [PharmacyController::class, 'login']);
 
+// Rider registration & login
+Route::post('/riders/register', [RiderController::class, 'register']);
+Route::post('/riders/login', [RiderController::class, 'login']);
+Route::post('/riders/forgot-password', [RiderController::class, 'forgotPassword']);
+Route::post('/riders/reset-password', [RiderController::class, 'resetPassword']);
 
+// Customer registration & login
 Route::post('/customers/register', [CustomerController::class, 'register']);
 Route::post('/customers/login',    [CustomerController::class, 'login']);
 Route::get('/pharmacies-list',     [CustomerController::class, 'browsePharmacies']);
 Route::get('/pharmacies/{id}/products', [CustomerController::class, 'pharmacyProducts']);
+
+
 
 // ── Protected routes (token required) ────────────────────────
 Route::middleware('auth:sanctum')->group(function () {
@@ -30,6 +39,16 @@ Route::middleware('auth:sanctum')->group(function () {
     
     Route::put('/customer/profile', [CustomerController::class, 'updateProfile']);
     Route::post('/customers/logout', [CustomerController::class, 'logout']);
+
+
+
+    Route::post('/riders/logout', [RiderController::class, 'logout']);
+    Route::get('/riders/available-orders', [RiderController::class, 'availableOrders']);
+    Route::post('/riders/orders/{id}/accept', [RiderController::class, 'acceptOrder']);
+    Route::get('/riders/my-orders', [RiderController::class, 'myOrders']);
+    Route::patch('/riders/orders/{id}/delivered', [RiderController::class, 'markDelivered']);
+    Route::put('/riders/profile', [RiderController::class, 'updateProfile']);
+    
 
 
     
