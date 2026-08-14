@@ -21,4 +21,6 @@ RUN php artisan storage:link || true
 
 EXPOSE 8000
 
-CMD php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=8000
+# Grant permission and run the startup script
+RUN chmod +x /app/entrypoint.sh
+CMD ["/app/entrypoint.sh"]
