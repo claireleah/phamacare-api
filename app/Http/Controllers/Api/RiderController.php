@@ -96,6 +96,21 @@ class RiderController extends Controller
         return response()->json(['message' => 'Order accepted', 'order' => $order->load('items.product', 'pharmacy')]);
     }
 
+
+    public function cancelOrder(Request $request, $id)
+    {
+        $rider = $request->user();
+
+        $order = Order::where('rider_id', $rider->id)->findOrFail($id);
+
+        $order->update([
+            'rider_id' => null,
+            'status'   => 'Confirmed',
+        ]);
+
+        return response()->json(['message' => 'Order cancelled']);
+    }
+
     // Orders currently assigned to this rider (active + history)
     public function myOrders(Request $request)
     {

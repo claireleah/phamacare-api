@@ -48,6 +48,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/riders/my-orders', [RiderController::class, 'myOrders']);
     Route::patch('/riders/orders/{id}/delivered', [RiderController::class, 'markDelivered']);
     Route::put('/riders/profile', [RiderController::class, 'updateProfile']);
+    Route::post('/riders/orders/{id}/cancel', [RiderController::class, 'cancelOrder']);
     
 
 
