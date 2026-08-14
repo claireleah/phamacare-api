@@ -60,8 +60,14 @@ return [
             'strict' => true,
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
-                (PHP_VERSION_ID >= 80500 ? Mysql::ATTR_SSL_CA : PDO::MYSQL_ATTR_SSL_CA) => env('MYSQL_ATTR_SSL_CA'),
+                // This looks for an environment variable on Render first. 
+                // If it doesn't find one, it falls back to your local folder path!
+                PDO::MYSQL_ATTR_SSL_CA => env('DB_SSL_CA_PATH', storage_path('certs/ca.pem')),
+                
+                // This keeps your security verification turned on by default.
+                PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => env('DB_SSL_VERIFY', true),
             ]) : [],
+
         ],
 
         'mariadb' => [
